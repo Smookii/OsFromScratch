@@ -1,3 +1,3 @@
 # OsFromScratch
 
-[Cahier des charges](specs.md)
+[Cahier des charges](doc/specs.md)
