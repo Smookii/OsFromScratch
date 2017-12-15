@@ -1,0 +1,5 @@
+- installer pandoc
+- installer mictex
+- je sais pas si y'a une merde niveau path
+- pandoc <source.md> -o <out.pdf>
+
