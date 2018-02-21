@@ -23,3 +23,10 @@ Une grande partie du projet consistera évidemment à se documenter sur le fonct
 9. Invite de commande (directement assembleur ? Possible ? )
 10. Invite de commande - Language "courant"
 
+#### Premiers pas
+
+*todo*
+
+#### Links
+
+[Base utilisée](http://createyourownos.blogspot.ch)
