@@ -38,3 +38,4 @@ La première chose à faire est de créer un bootloader c'est à dire le program
 
 [Base utilisée](http://createyourownos.blogspot.ch)
 [Github](https://github.com/cfenollosa/os-tutorial)
+[Document utilse](http://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf)
