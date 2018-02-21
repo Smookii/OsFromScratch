@@ -23,9 +23,16 @@ Une grande partie du projet consistera évidemment à se documenter sur le fonct
 9. Invite de commande (directement assembleur ? Possible ? )
 10. Invite de commande - Language "courant"
 
-#### Premiers pas
 
-*todo*
+#### Prérequis
+* Qemu qui permet de simuler une architecture sur laquelle nous lançons notre os.
+* Nasm qui permet de compiler des fichiers assembleurs en fichier binaire.
+
+
+#### BootLoader
+La première chose à faire est de créer un bootloader c'est à dire le programme, qui va être lancé à l'initialisation de la machine (dans un cas réel le boot loader doit être placer dans le MBR).
+
+
 
 #### Links
 
