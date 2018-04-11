@@ -48,3 +48,31 @@ make install-target-libgcc
 ```
 
 make install-gcc peut demander de passer en root (?)
+
+On peut enfin compiler notre function.c vers function.o :
+
+```shell
+narval@fuzzyOctopuss:~/dev/os-tutorial/12-kernel-c$ /usr/local/i386elfgcc/bin/i386-elf-gcc -ffreestanding -c function.c -o function.o
+```
+
+Résultat :
+
+```shell
+narval@fuzzyOctopuss:~/dev/os-tutorial/12-kernel-c$ cat function.c
+int my_function() {
+    return 0xbaba;
+}
+narval@fuzzyOctopuss:~/dev/os-tutorial/12-kernel-c$ /usr/local/i386elfgcc/bin/i386-elf-objdump -d function.o
+
+function.o:     file format elf32-i386
+
+
+Disassembly of section .text:
+
+00000000 <my_function>:
+   0:   55                      push   %ebp
+   1:   89 e5                   mov    %esp,%ebp
+   3:   b8 ba ba 00 00          mov    $0xbaba,%eax
+   8:   5d                      pop    %ebp
+   9:   c3                      ret    
+```
