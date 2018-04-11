@@ -1,0 +1,26 @@
+# Rapport OS From Scratch
+
+
+
+
+## Introduction
+Le but du projet est de créer un petit Os tournant sur une machine virtuel QEMU. 
+
+Le projet est séparé en plusieurs parties, l'implémentation du bootloader en assembleur qui est le premier fichier appelé
+après l'initialisation du BIOS et permettre d'appeler le kernel de notre OS.
+
+
+
+
+## Bootloader
+
+
+## Crosscompiler
+
+
+## Kernel
+
+
+## Problèmes rencontrés
+
+## Conclusion
