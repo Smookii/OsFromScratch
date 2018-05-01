@@ -31,7 +31,7 @@ Dans le cours de conception OS nous avons choisi un projet qui consiste
 * Comment écrire des programes bas niveau alors qu'il n'y a pas encore d'OS
 * Comment relier le CPU avec tous les composants
 * Comment passer du code assembleur à un langage haut niveau.
-* Comment créer des caractéristique d'un OS comme un filesystem, un shell, des drivers, des tâches 
+* Comment créer des caractéristique d'un OS comme un filesystem, un shell, des drivers, des tâches
 
 
 
@@ -49,6 +49,8 @@ Nasm est un compilateur qui permet notamment de transformer nos fichiers assembl
 
 ### 2.4 Environnement
 Le projet a été réaliser sur une système UNIX plus précisement une distribution Ubuntu. Mais le projet peut se faire également sur un système MSDOS.
+
+
 
 
 ## 3 Etape du projet
@@ -70,11 +72,14 @@ Le Bios ne sait pas comment lancer l'OS, c'est le boot sector qui s'en occupe. I
 Ce boot sector est en 16-bit.
 Dans un cas ou nous n'utiliserions pas une architecture virtuelle mais directement initialiser l'os sur un disque physique, il faudrait enregistrer le bootloader dans la MBR (Master Boot Record).
 
-Avant l'initialisation
 
+## 4. Passage de 16-bits(real mode) à 32-bits(protected mode)
+
+Dans notre OS, notre CPU de base qui est initalisé par le BIOS démarre en real mode (le BIOS ne fonctionne qu'en 16-bit). Ce mode a quelques inconvénients par contre, il n'utilise pas toute la puissance du CPU. Dans notre cas, on voudrait pouvoir compiler un langage de haut niveau par la suite et pour cela, il nous faut passer notre OS en protected mode. Le mode 32-bit nous permet de travailler sur plusieurs adressages mémoires virtuelles qui ont chacun une taille maximum de 4GB de mémoire adressable. Ca permet aussi au système de renforcer la mémoire et les protections au niveaux des I/O avec des instructions disponibles.
 
 
 ## 4. Crosscompiler
+Un cross-compiler est un compilateur qui est executé sur un host platform (pour nous ça sera notre système émulé sur QEMU). Ensuite la plateforme cible est l'OS que nous sommes entrain de réaliser (CPU, OS). Il est important de comprendre que la plateforme host et target ne sont pas les mêmes. Notre OS que nous faisons sera toujours différents de notre système actuelle. On doit utiliser un cross-compiler à moins qu'on développe notre vrai operating système. Mais pour notre projet nous ne voulons par créer un nouveau langage, on veut juste pouvoir utiliser un langage de haut niveau déjà existant pour pouvoir éviter de tout coder en assembleur.
 
 
 
@@ -129,7 +134,7 @@ make install-target-libgcc
 
 
 ## 5. Kernel
-
+Le Kernel est le coeur d'un Operating System. C'est lui qui est responsable de la gestion de la mémoire (MM), des I/O, de la gestion des interruptions, et encore d'autres choses.
 
 ## 6. Problèmes rencontrés
 
@@ -143,7 +148,7 @@ Nous vous laissons imaginer la suite.
 
 ### 6.2. Installation du cross-compiler
 
-
+## Problème rencontrés
 
 ## Mode d'emploie
 ### Nasm
@@ -160,7 +165,7 @@ $qemu your-os-boot-disk-image-file.bin
 
 
 ## 7. Conclusion
-Ce projet à été un véritable défi, du fait qu'il soit très bas niveau, nous avons du apprendre les bases d'un OS, réutiliser de l'assembleur et du C, recherché le fonctionnement d'un os par rapport au BIOS. 
+Ce projet à été un véritable défi, du fait qu'il soit très bas niveau, nous avons du apprendre les bases d'un OS, réutiliser de l'assembleur et du C, recherché le fonctionnement d'un os par rapport au BIOS.
 
 Bien que nous n'avons pas pu implémenter toutes les fonctionnalités du cahier des charges, nous avons reussi à appeler un kernel basique à partir d'un bootloader. Ce qui n'était déjà pas une mince affaire.
 
