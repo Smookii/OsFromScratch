@@ -1,5 +1,6 @@
 #include "string.h"
 #include <stdint.h>
+#include "../drivers/screen.h"
 
 const char d[] = "0123456789";
 
@@ -82,3 +83,43 @@ int strcmp(char s1[], char s2[]) {
     }
     return s1[i] - s2[i];
 }
+
+int contains_arg(char* c){
+  int i = 0;
+  for (i; i < strlen(c) - 2; i++){
+    if (c[i] == ' ' && c[i+1] == '=' && c[i+2] == ' '){
+      return i+3;
+    }
+  }
+  return 0;
+}
+
+void get_args(int index, char* input, char* dest){
+  int i = index;
+  for (i; i < strlen(input); i++){
+    append(dest, input[i]);
+  }
+}
+
+void strcopy(char* s1, char s2[]){
+  int len = strlen(s2);
+  kmalloc(len*sizeof(char), 1, s1);
+  int i;
+  for (i=0;i<len;i++){
+    s1[i] = s2[i];
+  }
+}
+
+void str_clear(char s[], int length){
+  int i;
+  for(i=0;i<length;i++){
+    s[i] = '\0';
+  }
+}
+/*
+void delete_str(char* in){
+  int i = 0;
+  for (i < strlen(in); i++){
+    in[i] = '';
+  }
+}*/

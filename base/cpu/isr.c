@@ -54,7 +54,7 @@ void isr_install() {
     port_byte_out(0x21, 0x01);
     port_byte_out(0xA1, 0x01);
     port_byte_out(0x21, 0x0);
-    port_byte_out(0xA1, 0x0); 
+    port_byte_out(0xA1, 0x0);
 
     // Install the IRQs
     set_idt_gate(32, (uint32_t)irq0);
@@ -124,6 +124,10 @@ void isr_handler(registers_t *r) {
     kprint("\n");
     kprint(exception_messages[r->int_no]);
     kprint("\n");
+    if (strcmp(s, "13") == 0){
+      kprint("The system will exit now, bye");
+      asm volatile("hlt");
+    }
 }
 
 void register_interrupt_handler(uint8_t n, isr_t handler) {
