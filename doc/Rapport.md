@@ -9,16 +9,19 @@
 		- [2.4 Environnement](#24-environnement)
 	- [3 Etape du projet](#3-etape-du-projet)
 	- [4. Bootloader (DONE)](#4-bootloader-done)
+	- [4. Passage de 16-bits(real mode) à 32-bits(protected mode)](#4-passage-de-16-bitsreal-mode-a-32-bitsprotected-mode)
 	- [4. Crosscompiler](#4-crosscompiler)
 		- [4.1 Implémenter le cross-compiler](#41-implementer-le-cross-compiler)
 	- [5. Kernel](#5-kernel)
-	- [6. Problèmes rencontrés](#6-problemes-rencontres)
-		- [6.1. Destruction d'une machine virtuelle](#61-destruction-dune-machine-virtuelle)
-		- [6.2. Installation du cross-compiler](#62-installation-du-cross-compiler)
-	- [Mode d'emploie](#mode-demploie)
+	- [6. FileSystem](#6-filesystem)
+	- [7. Problèmes rencontrés](#7-problemes-rencontres)
+		- [7.1. Crosscompilator](#71-crosscompilator)
+		- [7.2. Filesystem](#72-filesystem)
+		- [7.3. Destruction d'une machine virtuelle](#73-destruction-dune-machine-virtuelle)
+	- [8. Mode d'emploie](#8-mode-demploie)
 		- [Nasm](#nasm)
 		- [QEmu](#qemu)
-	- [7. Conclusion](#7-conclusion)
+	- [9. Conclusion](#9-conclusion)
 	- [Référence](#reference)
 
 
@@ -141,20 +144,23 @@ Pour le projet nous avons choisi d'utiliser la libraire C, car elle fournit tout
 Il fonctionne par compilation / assemblage.
 Un assembleur prends un code source et le converti en code machine (binaire), plus précisement, il converti le code source code en code object. Le compilateur prends le code source haut niveau, le converti convertie direcement en code object or dans notre cas avec GCC, converti direcement le source code en code source assembleur et invoque l'assemblage pour la partie final.
 
-## 6. Problèmes rencontrés
-### Crosscompilator
+## 6. FileSystem
+Le filesytem est enregistré sur la RAM, à l'initialisation du Kernel le fichier **LEKEBAB** est crée et va servir de rootfile et de fichier de base de notre liste chaîné. Après quoi on peut y ajouter des fichiers, qui contiennent un nom et un id.
+
+Ce qui nous as permis de faire des fonctions de recherche par id et de listage des fichiers.
+
+
+## 7. Problèmes rencontrés
+### 7.1. Crosscompilator
 Lors d'une mauvaise installation du GCC, on a essayé de passé du mode real en protected. On voulait compiler du code en C mais ceci ne fonctionnait.Il s'est avéré que le problème venait de la versionn du GCC (4.8). Nous avons du réinstaller une version plus récente de GCC (version 4.9.2) pour palier à ce problème. Il est important de noter qu'il faut toujours prendre la version la plus haute de GCC, car si on exécute du code C d'une version supérieure à la  notre, ceci ne fonctionnera pas.
 
-### Filesystem
+### 7.2. Filesystem
 Nous étions partis sur l'idée d'enregistrer notre filesystem sur le disque dur, mais fort malheureusement, arpès beaucoup de recherche et de tentatives, nous n'avons pas réussi à appeler le *handling interrupt* du BIOS qui permet de pouvoir accèder au HDD.
 
 Résolution : Ce problème a été résolu en créant notre filesystem à chaque redemarrage. C'est à dire qu'on stocke notre filesystem sur la RAM. Ce qui pour conséquence que à chaque fois que l'on redemarre notre OS, on pert notre filesystem.
 
 
-
-
-
-### 6.1. Destruction d'une machine virtuelle
+### 7.3. Destruction d'une machine virtuelle
 Bien que l'erreur n'est pas réellement lié au projet, nous tenions à rendre hommage à l'un des collaborateurs du projet qui en voulant éffacer un dans un dossier c'est un peu précipité et à tapé la ligne suivante :
 ```bash
 rm -rf /*
@@ -162,10 +168,7 @@ rm -rf /*
 Nous vous laissons imaginer la suite.
 
 
-### 6.2. Installation du cross-compiler
-
-
-## Mode d'emploie
+## 8. Mode d'emploie
 ### Nasm
 Pour passer du code assembleur à du code brute :
 ````bash
@@ -179,7 +182,7 @@ $qemu your-os-boot-disk-image-file.bin
 ````
 
 
-## 7. Conclusion
+## 9. Conclusion
 Ce projet à été un véritable défi, du fait qu'il soit très bas niveau, nous avons du apprendre les bases d'un OS, réutiliser de l'assembleur et du C, recherché le fonctionnement d'un os par rapport au BIOS.
 
 Bien que nous n'avons pas pu implémenter toutes les fonctionnalités du cahier des charges, nous avons reussi à appeler un kernel basique à partir d'un bootloader. Ce qui n'était déjà pas une mince affaire.
