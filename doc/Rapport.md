@@ -1,22 +1,26 @@
 # Rapport OS From Scratch
 
-<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
-
 - [Rapport OS From Scratch](#rapport-os-from-scratch)
 	- [1. Introduction](#1-introduction)
-	- [2. Prérequis](#2-prrequis)
+	- [2. Prérequis](#2-prerequis)
 		- [2.1. Machine virtuelle](#21-machine-virtuelle)
 		- [2.2. Qemu](#22-qemu)
 		- [2.3. Nasm](#23-nasm)
-	- [3. Bootloader](#3-bootloader)
+		- [2.4 Environnement](#24-environnement)
+	- [3 Etape du projet](#3-etape-du-projet)
+	- [4. Bootloader (DONE)](#4-bootloader-done)
 	- [4. Crosscompiler](#4-crosscompiler)
-		- [4.1 Implémenter le cross-compiler](#41-implmenter-le-cross-compiler)
+		- [4.1 Implémenter le cross-compiler](#41-implementer-le-cross-compiler)
 	- [5. Kernel](#5-kernel)
-	- [6. Problèmes rencontrés](#6-problmes-rencontrs)
+	- [6. Problèmes rencontrés](#6-problemes-rencontres)
 		- [6.1. Destruction d'une machine virtuelle](#61-destruction-dune-machine-virtuelle)
+		- [6.2. Installation du cross-compiler](#62-installation-du-cross-compiler)
+	- [Mode d'emploie](#mode-demploie)
+		- [Nasm](#nasm)
+		- [QEmu](#qemu)
 	- [7. Conclusion](#7-conclusion)
+	- [Référence](#reference)
 
-<!-- /TOC -->
 
 
 ## 1. Introduction
@@ -27,14 +31,14 @@ Dans le cours de conception OS nous avons choisi un projet qui consiste
 * Comment écrire des programes bas niveau alors qu'il n'y a pas encore d'OS
 * Comment relier le CPU avec tous les composants
 * Comment passer du code assembleur à un langage haut niveau.
-* Comment créer des caractéristique d'un OS comme un filesystem, un shell, des drivers, des tâches etc... .
+* Comment créer des caractéristique d'un OS comme un filesystem, un shell, des drivers, des tâches 
 
 
 
 
 ## 2. Prérequis
 ### 2.1. Machine virtuelle
-Les différens collaborateurs du projets ont décidé de travailler sur une machine virtuel linux.
+Les différents collaborateurs du projets ont décidés de travailler sur une machine virtuel linux.
 
 ### 2.2. Qemu
 Qemu est un logiciel qui permet de créer une machine virtuel permetant de simuler une architecture sur laquelle nous pouvons instancier notre os.
@@ -123,16 +127,11 @@ make install-gcc
 make install-target-libgcc
 ```
 
-make install-gcc peut demander de passer en root (?)
-
 
 ## 5. Kernel
 
 
 ## 6. Problèmes rencontrés
-
-
-
 
 ### 6.1. Destruction d'une machine virtuelle
 Bien que l'erreur n'est pas réellement lié au projet, nous tenions à rendre hommage à l'un des collaborateurs du projet qui en voulant éffacer un dans un dossier c'est un peu précipité et à tapé la ligne suivante :
@@ -140,6 +139,11 @@ Bien que l'erreur n'est pas réellement lié au projet, nous tenions à rendre h
 rm -rf /*
 ```
 Nous vous laissons imaginer la suite.
+
+
+### 6.2. Installation du cross-compiler
+
+
 
 ## Mode d'emploie
 ### Nasm
@@ -156,6 +160,10 @@ $qemu your-os-boot-disk-image-file.bin
 
 
 ## 7. Conclusion
+Ce projet à été un véritable défi, du fait qu'il soit très bas niveau, nous avons du apprendre les bases d'un OS, réutiliser de l'assembleur et du C, recherché le fonctionnement d'un os par rapport au BIOS. 
+
+Bien que nous n'avons pas pu implémenter toutes les fonctionnalités du cahier des charges, nous avons reussi à appeler un kernel basique à partir d'un bootloader. Ce qui n'était déjà pas une mince affaire.
+
 
 ## Référence
 * [Writing a Simple Operation System - from Scratch](http://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf) Document by Nick Blunde
