@@ -136,7 +136,23 @@ make install-target-libgcc
 ## 5. Kernel
 Le Kernel est le coeur d'un Operating System. C'est lui qui est responsable de la gestion de la mémoire (MM), des I/O, de la gestion des interruptions, et encore d'autres choses.
 
+Pour le projet nous avons choisi d'utiliser la libraire C, car elle fournit toutes les fonctions standard de C et les fournit en une forme binaire approprié pour le linkage avec les applications utilisateurs. En résumé, la librairie C est la mieux appropriée pour gérer notre OS.
+
+Il fonctionne par compilation / assemblage.
+Un assembleur prends un code source et le converti en code machine (binaire), plus précisement, il converti le code source code en code object. Le compilateur prends le code source haut niveau, le converti convertie direcement en code object or dans notre cas avec GCC, converti direcement le source code en code source assembleur et invoque l'assemblage pour la partie final.
+
 ## 6. Problèmes rencontrés
+### Crosscompilator
+Lors d'une mauvaise installation du GCC, on a essayé de passé du mode real en protected. On voulait compiler du code en C mais ceci ne fonctionnait.Il s'est avéré que le problème venait de la versionn du GCC (4.8). Nous avons du réinstaller une version plus récente de GCC (version 4.9.2) pour palier à ce problème. Il est important de noter qu'il faut toujours prendre la version la plus haute de GCC, car si on exécute du code C d'une version supérieure à la  notre, ceci ne fonctionnera pas.
+
+### Filesystem
+Nous étions partis sur l'idée d'enregistrer notre filesystem sur le disque dur, mais fort malheureusement, arpès beaucoup de recherche et de tentatives, nous n'avons pas réussi à appeler le *handling interrupt* du BIOS qui permet de pouvoir accèder au HDD.
+
+Résolution : Ce problème a été résolu en créant notre filesystem à chaque redemarrage. C'est à dire qu'on stocke notre filesystem sur la RAM. Ce qui pour conséquence que à chaque fois que l'on redemarre notre OS, on pert notre filesystem.
+
+
+
+
 
 ### 6.1. Destruction d'une machine virtuelle
 Bien que l'erreur n'est pas réellement lié au projet, nous tenions à rendre hommage à l'un des collaborateurs du projet qui en voulant éffacer un dans un dossier c'est un peu précipité et à tapé la ligne suivante :
@@ -148,7 +164,6 @@ Nous vous laissons imaginer la suite.
 
 ### 6.2. Installation du cross-compiler
 
-## Problème rencontrés
 
 ## Mode d'emploie
 ### Nasm
