@@ -9,16 +9,19 @@
 		- [2.4 Environnement](#24-environnement)
 	- [3 Etape du projet](#3-etape-du-projet)
 	- [4. Bootloader (DONE)](#4-bootloader-done)
+	- [4. Passage de 16-bits(real mode) à 32-bits(protected mode)](#4-passage-de-16-bitsreal-mode-a-32-bitsprotected-mode)
 	- [4. Crosscompiler](#4-crosscompiler)
 		- [4.1 Implémenter le cross-compiler](#41-implementer-le-cross-compiler)
 	- [5. Kernel](#5-kernel)
-	- [6. Problèmes rencontrés](#6-problemes-rencontres)
-		- [6.1. Destruction d'une machine virtuelle](#61-destruction-dune-machine-virtuelle)
-		- [6.2. Installation du cross-compiler](#62-installation-du-cross-compiler)
-	- [Mode d'emploie](#mode-demploie)
+	- [6. FileSystem](#6-filesystem)
+	- [7. Problèmes rencontrés](#7-problemes-rencontres)
+		- [7.1. Crosscompilator](#71-crosscompilator)
+		- [7.2. Filesystem](#72-filesystem)
+		- [7.3. Destruction d'une machine virtuelle](#73-destruction-dune-machine-virtuelle)
+	- [8. Mode d'emploie](#8-mode-demploie)
 		- [Nasm](#nasm)
 		- [QEmu](#qemu)
-	- [7. Conclusion](#7-conclusion)
+	- [9. Conclusion](#9-conclusion)
 	- [Référence](#reference)
 
 
@@ -31,7 +34,7 @@ Dans le cours de conception OS nous avons choisi un projet qui consiste
 * Comment écrire des programes bas niveau alors qu'il n'y a pas encore d'OS
 * Comment relier le CPU avec tous les composants
 * Comment passer du code assembleur à un langage haut niveau.
-* Comment créer des caractéristique d'un OS comme un filesystem, un shell, des drivers, des tâches 
+* Comment créer des caractéristique d'un OS comme un filesystem, un shell, des drivers, des tâches
 
 
 
@@ -49,6 +52,8 @@ Nasm est un compilateur qui permet notamment de transformer nos fichiers assembl
 
 ### 2.4 Environnement
 Le projet a été réaliser sur une système UNIX plus précisement une distribution Ubuntu. Mais le projet peut se faire également sur un système MSDOS.
+
+
 
 
 ## 3 Etape du projet
@@ -70,11 +75,14 @@ Le Bios ne sait pas comment lancer l'OS, c'est le boot sector qui s'en occupe. I
 Ce boot sector est en 16-bit.
 Dans un cas ou nous n'utiliserions pas une architecture virtuelle mais directement initialiser l'os sur un disque physique, il faudrait enregistrer le bootloader dans la MBR (Master Boot Record).
 
-Avant l'initialisation
 
+## 4. Passage de 16-bits(real mode) à 32-bits(protected mode)
+
+Dans notre OS, notre CPU de base qui est initalisé par le BIOS démarre en real mode (le BIOS ne fonctionne qu'en 16-bit). Ce mode a quelques inconvénients par contre, il n'utilise pas toute la puissance du CPU. Dans notre cas, on voudrait pouvoir compiler un langage de haut niveau par la suite et pour cela, il nous faut passer notre OS en protected mode. Le mode 32-bit nous permet de travailler sur plusieurs adressages mémoires virtuelles qui ont chacun une taille maximum de 4GB de mémoire adressable. Ca permet aussi au système de renforcer la mémoire et les protections au niveaux des I/O avec des instructions disponibles.
 
 
 ## 4. Crosscompiler
+Un cross-compiler est un compilateur qui est executé sur un host platform (pour nous ça sera notre système émulé sur QEMU). Ensuite la plateforme cible est l'OS que nous sommes entrain de réaliser (CPU, OS). Il est important de comprendre que la plateforme host et target ne sont pas les mêmes. Notre OS que nous faisons sera toujours différents de notre système actuelle. On doit utiliser un cross-compiler à moins qu'on développe notre vrai operating système. Mais pour notre projet nous ne voulons par créer un nouveau langage, on veut juste pouvoir utiliser un langage de haut niveau déjà existant pour pouvoir éviter de tout coder en assembleur.
 
 
 
@@ -129,11 +137,30 @@ make install-target-libgcc
 
 
 ## 5. Kernel
+Le Kernel est le coeur d'un Operating System. C'est lui qui est responsable de la gestion de la mémoire (MM), des I/O, de la gestion des interruptions, et encore d'autres choses.
+
+Pour le projet nous avons choisi d'utiliser la libraire C, car elle fournit toutes les fonctions standard de C et les fournit en une forme binaire approprié pour le linkage avec les applications utilisateurs. En résumé, la librairie C est la mieux appropriée pour gérer notre OS.
+
+Il fonctionne par compilation / assemblage.
+Un assembleur prends un code source et le converti en code machine (binaire), plus précisement, il converti le code source code en code object. Le compilateur prends le code source haut niveau, le converti convertie direcement en code object or dans notre cas avec GCC, converti direcement le source code en code source assembleur et invoque l'assemblage pour la partie final.
+
+## 6. FileSystem
+Le filesytem est enregistré sur la RAM, à l'initialisation du Kernel le fichier **LEKEBAB** est crée et va servir de rootfile et de fichier de base de notre liste chaîné. Après quoi on peut y ajouter des fichiers, qui contiennent un nom et un id.
+
+Ce qui nous as permis de faire des fonctions de recherche par id et de listage des fichiers.
 
 
-## 6. Problèmes rencontrés
+## 7. Problèmes rencontrés
+### 7.1. Crosscompilator
+Lors d'une mauvaise installation du GCC, on a essayé de passé du mode real en protected. On voulait compiler du code en C mais ceci ne fonctionnait.Il s'est avéré que le problème venait de la versionn du GCC (4.8). Nous avons du réinstaller une version plus récente de GCC (version 4.9.2) pour palier à ce problème. Il est important de noter qu'il faut toujours prendre la version la plus haute de GCC, car si on exécute du code C d'une version supérieure à la  notre, ceci ne fonctionnera pas.
 
-### 6.1. Destruction d'une machine virtuelle
+### 7.2. Filesystem
+Nous étions partis sur l'idée d'enregistrer notre filesystem sur le disque dur, mais fort malheureusement, arpès beaucoup de recherche et de tentatives, nous n'avons pas réussi à appeler le *handling interrupt* du BIOS qui permet de pouvoir accèder au HDD.
+
+Résolution : Ce problème a été résolu en créant notre filesystem à chaque redemarrage. C'est à dire qu'on stocke notre filesystem sur la RAM. Ce qui pour conséquence que à chaque fois que l'on redemarre notre OS, on pert notre filesystem.
+
+
+### 7.3. Destruction d'une machine virtuelle
 Bien que l'erreur n'est pas réellement lié au projet, nous tenions à rendre hommage à l'un des collaborateurs du projet qui en voulant éffacer un dans un dossier c'est un peu précipité et à tapé la ligne suivante :
 ```bash
 rm -rf /*
@@ -141,11 +168,7 @@ rm -rf /*
 Nous vous laissons imaginer la suite.
 
 
-### 6.2. Installation du cross-compiler
-
-
-
-## Mode d'emploie
+## 8. Mode d'emploie
 ### Nasm
 Pour passer du code assembleur à du code brute :
 ````bash
@@ -159,8 +182,8 @@ $qemu your-os-boot-disk-image-file.bin
 ````
 
 
-## 7. Conclusion
-Ce projet à été un véritable défi, du fait qu'il soit très bas niveau, nous avons du apprendre les bases d'un OS, réutiliser de l'assembleur et du C, recherché le fonctionnement d'un os par rapport au BIOS. 
+## 9. Conclusion
+Ce projet à été un véritable défi, du fait qu'il soit très bas niveau, nous avons du apprendre les bases d'un OS, réutiliser de l'assembleur et du C, recherché le fonctionnement d'un os par rapport au BIOS.
 
 Bien que nous n'avons pas pu implémenter toutes les fonctionnalités du cahier des charges, nous avons reussi à appeler un kernel basique à partir d'un bootloader. Ce qui n'était déjà pas une mince affaire.
 
