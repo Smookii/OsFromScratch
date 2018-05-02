@@ -168,7 +168,7 @@ rm -rf /*
 Nous vous laissons imaginer la suite.
 
 
-## 8. Mode d'emploie
+## 8. Mode d'emploi
 ### Nasm
 Pour passer du code assembleur à du code brute :
 ````bash
@@ -180,6 +180,13 @@ Pour émuler notre os.
 ````bash
 $qemu your-os-boot-disk-image-file.bin
 ````
+
+### Lancer l'os
+
+dans la racine base/
+```bash
+$make run
+```
 
 
 ## 9. Conclusion
