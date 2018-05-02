@@ -390,25 +390,28 @@ blockquote {
 </li>
 <li><a href="#3-etape-du-projet">3 Etape du projet</a></li>
 <li><a href="#4-bootloader-done">4. Bootloader (DONE)</a></li>
+<li><a href="#4-passage-de-16-bitsreal-mode-a-32-bitsprotected-mode">4. Passage de 16-bits(real mode) à 32-bits(protected mode)</a></li>
 <li><a href="#4-crosscompiler">4. Crosscompiler</a>
 <ul>
 <li><a href="#41-implementer-le-cross-compiler">4.1 Implémenter le cross-compiler</a></li>
 </ul>
 </li>
 <li><a href="#5-kernel">5. Kernel</a></li>
-<li><a href="#6-problemes-rencontres">6. Problèmes rencontrés</a>
+<li><a href="#6-filesystem">6. FileSystem</a></li>
+<li><a href="#7-problemes-rencontres">7. Problèmes rencontrés</a>
 <ul>
-<li><a href="#61-destruction-dune-machine-virtuelle">6.1. Destruction d'une machine virtuelle</a></li>
-<li><a href="#62-installation-du-cross-compiler">6.2. Installation du cross-compiler</a></li>
+<li><a href="#71-crosscompilator">7.1. Crosscompilator</a></li>
+<li><a href="#72-filesystem">7.2. Filesystem</a></li>
+<li><a href="#73-destruction-dune-machine-virtuelle">7.3. Destruction d'une machine virtuelle</a></li>
 </ul>
 </li>
-<li><a href="#mode-demploie">Mode d'emploie</a>
+<li><a href="#8-mode-demploie">8. Mode d'emploie</a>
 <ul>
 <li><a href="#nasm">Nasm</a></li>
 <li><a href="#qemu">QEmu</a></li>
 </ul>
 </li>
-<li><a href="#7-conclusion">7. Conclusion</a></li>
+<li><a href="#9-conclusion">9. Conclusion</a></li>
 <li><a href="#reference">Référence</a></li>
 </ul>
 </li>
@@ -424,6 +427,7 @@ Dans le cours de conception OS nous avons choisi un projet qui consiste
 <li>Comment passer du code assembleur à un langage haut niveau.</li>
 <li>Comment créer des caractéristique d'un OS comme un filesystem, un shell, des drivers, des tâches</li>
 </ul>
+<div style="page-break-after: always;"></div>
 <h2 id="2-pr%C3%A9requis">2. Prérequis</h2>
 <h3 id="21-machine-virtuelle">2.1. Machine virtuelle</h3>
 <p>Les différents collaborateurs du projets ont décidés de travailler sur une machine virtuel linux.</p>
@@ -450,8 +454,10 @@ Nous émulons un processeur i386 comme architécture.</p>
 <p>Le Bios ne sait pas comment lancer l'OS, c'est le boot sector qui s'en occupe. Il est placé dans le 1er secteur du disque dr (cylindre 0, head 0, secteur 0). Il prend 512 bytes.
 Ce boot sector est en 16-bit.
 Dans un cas ou nous n'utiliserions pas une architecture virtuelle mais directement initialiser l'os sur un disque physique, il faudrait enregistrer le bootloader dans la MBR (Master Boot Record).</p>
-<p>Avant l'initialisation</p>
+<h2 id="4-passage-de-16-bitsreal-mode-%C3%A0-32-bitsprotected-mode">4. Passage de 16-bits(real mode) à 32-bits(protected mode)</h2>
+<p>Dans notre OS, notre CPU de base qui est initalisé par le BIOS démarre en real mode (le BIOS ne fonctionne qu'en 16-bit). Ce mode a quelques inconvénients par contre, il n'utilise pas toute la puissance du CPU. Dans notre cas, on voudrait pouvoir compiler un langage de haut niveau par la suite et pour cela, il nous faut passer notre OS en protected mode. Le mode 32-bit nous permet de travailler sur plusieurs adressages mémoires virtuelles qui ont chacun une taille maximum de 4GB de mémoire adressable. Ca permet aussi au système de renforcer la mémoire et les protections au niveaux des I/O avec des instructions disponibles.</p>
 <h2 id="4-crosscompiler">4. Crosscompiler</h2>
+<p>Un cross-compiler est un compilateur qui est executé sur un host platform (pour nous ça sera notre système émulé sur QEMU). Ensuite la plateforme cible est l'OS que nous sommes entrain de réaliser (CPU, OS). Il est important de comprendre que la plateforme host et target ne sont pas les mêmes. Notre OS que nous faisons sera toujours différents de notre système actuelle. On doit utiliser un cross-compiler à moins qu'on développe notre vrai operating système. Mais pour notre projet nous ne voulons par créer un nouveau langage, on veut juste pouvoir utiliser un langage de haut niveau déjà existant pour pouvoir éviter de tout coder en assembleur.</p>
 <h3 id="41-impl%C3%A9menter-le-cross-compiler">4.1 Implémenter le cross-compiler</h3>
 <p>Tout d'abord nous alons récupérer le path de la version actuelle de gcc, avec la commande suivante :</p>
 <pre class="hljs"><code><div><span class="hljs-built_in">which</span> gcc
@@ -488,16 +494,26 @@ make all-target-libgcc
 make install-gcc
 make install-target-libgcc
 </div></code></pre>
-<p>make install-gcc peut demander de passer en root (?)</p>
 <h2 id="5-kernel">5. Kernel</h2>
-<h2 id="6-probl%C3%A8mes-rencontr%C3%A9s">6. Problèmes rencontrés</h2>
-<h3 id="61-destruction-dune-machine-virtuelle">6.1. Destruction d'une machine virtuelle</h3>
+<p>Le Kernel est le coeur d'un Operating System. C'est lui qui est responsable de la gestion de la mémoire (MM), des I/O, de la gestion des interruptions, et encore d'autres choses.</p>
+<p>Pour le projet nous avons choisi d'utiliser la libraire C, car elle fournit toutes les fonctions standard de C et les fournit en une forme binaire approprié pour le linkage avec les applications utilisateurs. En résumé, la librairie C est la mieux appropriée pour gérer notre OS.</p>
+<p>Il fonctionne par compilation / assemblage.
+Un assembleur prends un code source et le converti en code machine (binaire), plus précisement, il converti le code source code en code object. Le compilateur prends le code source haut niveau, le converti convertie direcement en code object or dans notre cas avec GCC, converti direcement le source code en code source assembleur et invoque l'assemblage pour la partie final.</p>
+<h2 id="6-filesystem">6. FileSystem</h2>
+<p>Le filesytem est enregistré sur la RAM, à l'initialisation du Kernel le fichier <strong>LEKEBAB</strong> est crée et va servir de rootfile et de fichier de base de notre liste chaîné. Après quoi on peut y ajouter des fichiers, qui contiennent un nom et un id.</p>
+<p>Ce qui nous as permis de faire des fonctions de recherche par id et de listage des fichiers.</p>
+<h2 id="7-probl%C3%A8mes-rencontr%C3%A9s">7. Problèmes rencontrés</h2>
+<h3 id="71-crosscompilator">7.1. Crosscompilator</h3>
+<p>Lors d'une mauvaise installation du GCC, on a essayé de passé du mode real en protected. On voulait compiler du code en C mais ceci ne fonctionnait.Il s'est avéré que le problème venait de la versionn du GCC (4.8). Nous avons du réinstaller une version plus récente de GCC (version 4.9.2) pour palier à ce problème. Il est important de noter qu'il faut toujours prendre la version la plus haute de GCC, car si on exécute du code C d'une version supérieure à la  notre, ceci ne fonctionnera pas.</p>
+<h3 id="72-filesystem">7.2. Filesystem</h3>
+<p>Nous étions partis sur l'idée d'enregistrer notre filesystem sur le disque dur, mais fort malheureusement, arpès beaucoup de recherche et de tentatives, nous n'avons pas réussi à appeler le <em>handling interrupt</em> du BIOS qui permet de pouvoir accèder au HDD.</p>
+<p>Résolution : Ce problème a été résolu en créant notre filesystem à chaque redemarrage. C'est à dire qu'on stocke notre filesystem sur la RAM. Ce qui pour conséquence que à chaque fois que l'on redemarre notre OS, on pert notre filesystem.</p>
+<h3 id="73-destruction-dune-machine-virtuelle">7.3. Destruction d'une machine virtuelle</h3>
 <p>Bien que l'erreur n'est pas réellement lié au projet, nous tenions à rendre hommage à l'un des collaborateurs du projet qui en voulant éffacer un dans un dossier c'est un peu précipité et à tapé la ligne suivante :</p>
 <pre class="hljs"><code><div>rm -rf /*
 </div></code></pre>
 <p>Nous vous laissons imaginer la suite.</p>
-<h3 id="62-installation-du-cross-compiler">6.2. Installation du cross-compiler</h3>
-<h2 id="mode-demploie">Mode d'emploie</h2>
+<h2 id="8-mode-demploie">8. Mode d'emploie</h2>
 <h3 id="nasm">Nasm</h3>
 <p>Pour passer du code assembleur à du code brute :</p>
 <pre class="hljs"><code><div><span class="hljs-variable">$nasm</span> boot_sect.asm -f -o boot_sect.bin
@@ -506,7 +522,10 @@ make install-target-libgcc
 <p>Pour émuler notre os.</p>
 <pre class="hljs"><code><div><span class="hljs-variable">$qemu</span> your-os-boot-disk-image-file.bin
 </div></code></pre>
-<h2 id="7-conclusion">7. Conclusion</h2>
+<h2 id="9-conclusion">9. Conclusion</h2>
+<p>Ce projet à été un véritable défi, du fait qu'il soit très bas niveau, nous avons du apprendre les bases d'un OS, réutiliser de l'assembleur et du C, recherché le fonctionnement d'un os par rapport au BIOS.</p>
+<p>Bien que nous n'avons pas pu implémenter toutes les fonctionnalités du cahier des charges, nous avons reussi à appeler un kernel basique à partir d'un bootloader. Ce qui n'était déjà pas une mince affaire.</p>
+<div style="page-break-after: always;"></div>
 <h2 id="r%C3%A9f%C3%A9rence">Référence</h2>
 <ul>
 <li><a href="http://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf">Writing a Simple Operation System - from Scratch</a> Document by Nick Blunde</li>

@@ -37,7 +37,7 @@ Dans le cours de conception OS nous avons choisi un projet qui consiste
 * Comment créer des caractéristique d'un OS comme un filesystem, un shell, des drivers, des tâches
 
 
-
+<div style="page-break-after: always;"></div>
 
 ## 2. Prérequis
 ### 2.1. Machine virtuelle
@@ -187,6 +187,7 @@ Ce projet à été un véritable défi, du fait qu'il soit très bas niveau, nou
 
 Bien que nous n'avons pas pu implémenter toutes les fonctionnalités du cahier des charges, nous avons reussi à appeler un kernel basique à partir d'un bootloader. Ce qui n'était déjà pas une mince affaire.
 
+<div style="page-break-after: always;"></div>
 
 ## Référence
 * [Writing a Simple Operation System - from Scratch](http://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf) Document by Nick Blunde
