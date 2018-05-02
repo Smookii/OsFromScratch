@@ -135,6 +135,19 @@ make install-gcc
 make install-target-libgcc
 ```
 
+Si le crosscompiler n'a pas été installé au même endroit que machines, les lignes 7, 8, 19 et 23 du Makefile doivent être changées ..
+
+```bash
+CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
+GDB = /usr/local/i386elfgcc/bin/i386-elf-gdb
+
+kernel.bin: boot/kernel_entry.o ${OBJ}
+	/usr/local/i386elfgcc/bin/i386-elf-ld -o $@ -Ttext 0x1000 $^ --oformat binary
+
+kernel.elf: boot/kernel_entry.o ${OBJ}
+	/usr/local/i386elfgcc/bin/i386-elf-ld -o $@ -Ttext 0x1000 $^
+
+```
 
 ## 5. Kernel
 Le Kernel est le coeur d'un Operating System. C'est lui qui est responsable de la gestion de la mémoire (MM), des I/O, de la gestion des interruptions, et encore d'autres choses.
