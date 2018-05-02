@@ -15,14 +15,18 @@ void kernel_main() {
     isr_install();
     irq_install();
 
+    init_kfs();
+
     asm("int $2");
     asm("int $3");
 
     kprint("Type something, it will go through the kernel\n"
-        "Type KTHXBAI to halt the CPU or KEBAB-MALLOC to request a kmalloc()\n> ");
+        "Type KTHXBAI to halt the CPU or KEBAB-MALLOC to request a kmalloc()\n> "
+        "C = [Args] to create a file, L to list files\n");
 }
 
 void user_input(char *input) {
+  contains_arg(input);
     if (strcmp(input, "KTHXBAI") == 0) {
         kprint("Stopping the CPU. Bye!\n");
         asm volatile("hlt");
@@ -47,16 +51,32 @@ void user_input(char *input) {
         kprint(phys_str);
         kprint("\n");
     }
-    /*
-    else if (strcmp(input, "U MOM GAY") == 0){
-      kprint("NO U\n");
-    }*/
     else if (strcmp(input, "SNOW NOW PLS") == 0){
       *vga = 0xb8000;
       vga += 0xb1;
       kprint(vga);
     }
-    //kprint("You said: ");
-    //kprint(input);
-    //notkprint("\n> ");
+    else if (strcmp(input, "L") == 0){
+      list_files();
+    }
+    else{
+      int index = contains_arg(input);
+      if (index != 0){
+        if (input[0] == 'C'){
+          char buffer[128];
+          get_args(index, input, buffer);
+          c_file(buffer);
+          str_clear(buffer, 128);
+        }
+        else if (input[0] == 'R'){
+          //todo
+        }
+        else if (input[0] == 'S'){
+          //findbyid
+        }
+      }
+    }
+    kprint("You said: ");
+    kprint(input);
+    kprint("\n");
 }
